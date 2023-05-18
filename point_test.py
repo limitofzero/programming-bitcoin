@@ -1,5 +1,6 @@
 from unittest import TestCase
 from ecc import FieldElement
+from encode_base_58 import encode_base58
 from point import Point
 from s256point import N, S256Point, G
 from signature import Signature
@@ -153,4 +154,13 @@ class ECCTest(TestCase):
         self.assertEqual(
             der.hex(),
             '3045022037206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c60221008ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec'
+        )
+
+    def test_encode_base58(self):
+        val = '7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d'
+        val_bytes = bytes.fromhex(val)
+        encoded = encode_base58(val_bytes)
+        self.assertEqual(
+            encoded,
+            '9MA8fRQrT4u8Zj8ZRd6MAiiyaxb2Y1CMpvVkHQu5hVM6'
         )
