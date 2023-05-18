@@ -1,6 +1,6 @@
 from unittest import TestCase
 from ecc import FieldElement
-from encode_base_58 import encode_base58
+from helpers.encode_base_58 import encode_base58
 from point import Point
 from s256point import N, S256Point, G
 from signature import Signature
@@ -163,4 +163,13 @@ class ECCTest(TestCase):
         self.assertEqual(
             encoded,
             '9MA8fRQrT4u8Zj8ZRd6MAiiyaxb2Y1CMpvVkHQu5hVM6'
+        )
+
+    def test_point_address_mainnet(self):
+        private_key = PrivateKey(0x12345deadbeef)
+        point = private_key.point
+        address = point.address(True, False)
+        self.assertEqual(
+            address,
+            '1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1'
         )
