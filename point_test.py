@@ -173,3 +173,10 @@ class ECCTest(TestCase):
             address,
             '1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1'
         )
+
+    def test_wif_mainnet(self):
+        private_key = PrivateKey(0x54321deadbeef)
+        self.assertEqual(
+            private_key.wif(True),
+            'KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgiuQJv1h8Ytr2S53a'
+        )

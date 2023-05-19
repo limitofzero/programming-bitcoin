@@ -2,6 +2,7 @@
 import hashlib
 import hmac
 from random import randint
+from helpers.encode_base58_checksum import encode_base58_checksum
 from s256point import G, N
 from signature import Signature
 
@@ -44,3 +45,9 @@ class PrivateKey:
         if (s > N / 2):
             s = N - s
         return Signature(r, s)
+
+    def wif(self, compressed=False, testnet=False):
+        secret_bytes = self.secret.to_bytes(32, 'big')
+        prefix = b'\xef' if testnet else b'\x80'
+        suffix = b'\x01' if compressed else b''
+        return encode_base58_checksum(prefix + secret_bytes + suffix)
