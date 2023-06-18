@@ -25,6 +25,12 @@ class S256Point(Point):
         # V = r * s^(-1) % N
         # PublicKey = G * PrivateKey
         # C = U * G + V * PublicKey
+        # C = U * G + V * G * PrivateKey
+        # U = mshHash * s^(-1)
+        # V = r * s^(-1)
+        # => C = (msgHash * s^(-1)) * G + (r * s^(-1)) * G * PrivateKey
+        # => C = G(msgHash * s^(-1) + (r * s^(-1) * PrivateKey)
+        # => C = (G * (s^-1)) * (msgHash + r * PrivateKey)
         # if C.x % N == r
         s_inv = pow(signature.s, N - 2, N)
         u = msgHash * s_inv % N
