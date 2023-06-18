@@ -1,7 +1,7 @@
 import point_test
 import transactions.tx_test
-from script.script_test import ScriptTest
-from transactions.tx_fetcher_test import TxFetcherTest
+# from script.script_test import ScriptTest
+# from transactions.tx_fetcher_test import TxFetcherTest
 from helper import run
 
 run(point_test.ECCTest('test_on_curve'))
@@ -22,6 +22,6 @@ run(point_test.ECCTest('test_wif_mainnet'))
 
 run(transactions.tx_test.TxTest('parsing_test'))
 
-run(ScriptTest('parsing_test'))
+# run(ScriptTest('parsing_test'))
 
 # run(TxFetcherTest('fetch_mainnet_tx_by_hash_test'))

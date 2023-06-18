@@ -30,3 +30,7 @@ class TxTest(TestCase):
         script_sig_of_second_input = """304402207899531a52d59a6de200179928ca900254a36b8dff8bb75f5f5d71b1cdc26125022008b422690b8461cb52c3cc30330b23d574351872b7c361e9aae3649071c1a71601 035d5c93d9ac96881f19ba1f686f15f009ded7c62efe85a872e6a19b43c15a2937"""
         self.assertEqual(tx.tx_ins[1].script_sig.__repr__(),
                          script_sig_of_second_input)
+
+        expected_script_pubkey = """OP_DUP OP_HASH160 ab0c0b2e98b1ab6dbf67d4750b0a56244948a879 OP_EQUALVERIFY OP_CHECKSIG"""
+        self.assertEqual(
+            tx.tx_outs[0].script_pubkey.__repr__(), expected_script_pubkey)
