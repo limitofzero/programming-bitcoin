@@ -1,4 +1,5 @@
 import point_test
+from transactions.tx_fetcher_test import TxFetcherTest
 import transactions.tx_test
 # from script.script_test import ScriptTest
 # from transactions.tx_fetcher_test import TxFetcherTest
@@ -21,6 +22,7 @@ run(point_test.ECCTest('test_point_address_mainnet'))
 run(point_test.ECCTest('test_wif_mainnet'))
 
 run(transactions.tx_test.TxTest('parsing_test'))
+# run(transactions.tx_test.TxTest('tx_parse_modern_tx'))
 
 # run(ScriptTest('parsing_test'))
 

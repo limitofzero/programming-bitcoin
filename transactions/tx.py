@@ -1,6 +1,6 @@
 from helpers.crypto.hash256 import hash256
-from helpers.little_endian_to_int import little_endian_to_int
-from helpers.variant import read_varint
+from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
+from helpers.variant import encode_varint, read_varint
 from transactions.tx_in import TxIn
 from transactions.tx_out import TxOut
 
@@ -35,6 +35,18 @@ class Tx:
     def hash(self):  # <4>
         '''Binary hash of the legacy serialization'''
         return hash256(self.serialize())[::-1]
+
+    def serialize(self):
+        '''Returns the byte serialization of the transaction'''
+        result = int_to_little_endian(self.version, 4)
+        result += encode_varint(len(self.tx_ins))
+        for tx_in in self.tx_ins:
+            result += tx_in.serialize()
+        result += encode_varint(len(self.tx_outs))
+        for tx_out in self.tx_outs:
+            result += tx_out.serialize()
+        result += int_to_little_endian(self.locktime, 4)
+        return result
 
     @classmethod
     def parse(cls, stream, testnet=False):

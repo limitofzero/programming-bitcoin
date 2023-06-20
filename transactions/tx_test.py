@@ -34,3 +34,11 @@ class TxTest(TestCase):
         expected_script_pubkey = """OP_DUP OP_HASH160 ab0c0b2e98b1ab6dbf67d4750b0a56244948a879 OP_EQUALVERIFY OP_CHECKSIG"""
         self.assertEqual(
             tx.tx_outs[0].script_pubkey.__repr__(), expected_script_pubkey)
+
+    def tx_parse_modern_tx(self):
+        tx = """020000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff3103ec200c041dbc8e642f466f756e6472792055534120506f6f6c202364726f70676f6c642f26c4ae234cff0b0000000000ffffffff02013448260000000016001435f6de260c9f3bdee47524c473a6016c0c055cb90000000000000000266a24aa21a9edf2df02de2db4dfd6324cc2a2f0f838e2ccb79192c53e5f622983c014c1083b6d0120000000000000000000000000000000000000000000000000000000000000000000000000"""
+        hex_bytes = bytes.fromhex(tx)
+        stream = io.BytesIO(hex_bytes)
+        tx = Tx.parse(stream)
+
+        self.assertEqual(tx.id(), True)

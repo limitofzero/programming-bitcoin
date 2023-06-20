@@ -1,5 +1,5 @@
 from helpers.variant import read_varint
-from helpers.little_endian_to_int import little_endian_to_int
+from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
 from script.script import Script
 
 
@@ -19,6 +19,13 @@ class TxIn:
             self.prev_index,
         )
 
+    def serialize(self):
+        result = self.prev_tx[::-1]
+        result += int_to_little_endian(self.prev_index, 4)
+        result += self.script_sig.serialize()
+        result += int_to_little_endian(self.sequence, 4)
+        return result
+
     @classmethod
     def parse(cls, stream):
         prev_tx = stream.read(32)[::-1]
@@ -26,4 +33,4 @@ class TxIn:
         prev_index = little_endian_to_int(prev_index_bytes)
         script_sig = Script.parse(stream)
         sequence = little_endian_to_int(stream.read(4))
-        return TxIn(prev_tx, prev_index, script_sig, sequence)
+        return cls(prev_tx, prev_index, script_sig, sequence)

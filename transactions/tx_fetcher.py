@@ -20,6 +20,7 @@ class TxFetcher:
         if fresh or (tx_id not in cls.cache):
             url = '{}/tx/{}/hex'.format(cls.get_url(testnet), tx_id)
             response = requests.get(url)
+            print(response.text)
             try:
                 raw = bytes.fromhex(response.text.strip())
             except ValueError:
