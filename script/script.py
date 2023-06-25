@@ -1,5 +1,5 @@
 from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
-from helpers.variant import read_varint
+from helpers.variant import encode_varint, read_varint
 from script.op import OP_CODE_NAMES
 
 
@@ -73,3 +73,8 @@ class Script:
                     raise ValueError('too long an cmd')
                 result += cmd
         return result
+
+    def serialize(self):
+        result = self.raw_serialize()
+        total = len(result)
+        return encode_varint(total) + result

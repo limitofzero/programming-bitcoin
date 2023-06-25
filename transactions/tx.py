@@ -1,3 +1,4 @@
+from io import BytesIO
 from helpers.crypto.hash256 import hash256
 from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
 from helpers.variant import encode_varint, read_varint
@@ -64,3 +65,13 @@ class Tx:
 
         locktime = little_endian_to_int(stream.read(4))
         return Tx(version, tx_ins, tx_outs, locktime)
+
+    @classmethod
+    def parse_raw_tx(cls, raw, testnet=False):
+        if raw[4] == 0:
+            raw = raw[:4] + raw[6:]
+            tx = cls.parse(BytesIO(raw), testnet=testnet)
+            tx.locktime = little_endian_to_int(raw[-4:])
+        else:
+            tx = cls.parse(BytesIO(raw), testnet=testnet)
+        return tx
