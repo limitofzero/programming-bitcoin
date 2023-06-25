@@ -40,4 +40,6 @@ class TxTest(TestCase):
         hex_bytes = bytes.fromhex(tx)
         tx = Tx.parse_raw_tx(hex_bytes)
 
-        self.assertEqual(tx.id(), True)
+        self.assertEqual(
+            tx.id(), '6530b6ed99c401262c4d40b2d097ec0fd28091b6e8b4b30e04b6b6d82576d17b'
+        )

@@ -22,7 +22,7 @@ run(point_test.ECCTest('test_point_address_mainnet'))
 run(point_test.ECCTest('test_wif_mainnet'))
 
 run(transactions.tx_test.TxTest('parsing_test'))
-# run(transactions.tx_test.TxTest('tx_parse_modern_tx'))
+run(transactions.tx_test.TxTest('tx_parse_modern_tx'))
 #
 # run(ScriptTest('parsing_test'))
 

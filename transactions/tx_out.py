@@ -1,4 +1,4 @@
-from helpers.little_endian_to_int import little_endian_to_int
+from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
 from helpers.variant import read_varint
 from script.script import Script
 
@@ -16,3 +16,8 @@ class TxOut:
         amount = little_endian_to_int(s.read(8))
         script_pubkey = Script.parse(s)
         return cls(amount, script_pubkey)
+
+    def serialize(self):
+        result = int_to_little_endian(self.amount, 8)
+        result += self.script_pubkey.serialize()
+        return result
