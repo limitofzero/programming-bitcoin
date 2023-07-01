@@ -1,4 +1,5 @@
 import point_test
+from script.script_test import ScriptTest
 from transactions.tx_fetcher_test import TxFetcherTest
 import transactions.tx_test
 # from script.script_test import ScriptTest
@@ -25,6 +26,6 @@ run(transactions.tx_test.TxTest('parsing_test'))
 run(transactions.tx_test.TxTest('tx_parse_modern_tx'))
 run(transactions.tx_test.TxTest('tx_calculate_fee'))
 #
-# run(ScriptTest('parsing_test'))
+run(ScriptTest('unlock_script_pubkey'))
 
 # run(TxFetcherTest('fetch_mainnet_tx_by_hash_test'))

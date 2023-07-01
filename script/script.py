@@ -1,6 +1,6 @@
 from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
 from helpers.variant import encode_varint, read_varint
-from script.op import OP_CODE_NAMES
+from script.op import OP_CODE_FUNCTIONS, OP_CODE_NAMES
 
 
 class Script:
@@ -78,3 +78,35 @@ class Script:
         result = self.raw_serialize()
         total = len(result)
         return encode_varint(total) + result
+
+    def evaluate(self, z):
+        cmds = self.cmds[:]
+        stack = []
+        altstack = []
+        while len(cmds) > 0:
+            cmd = cmds.pop(0)
+            if type(cmd) == int:
+                operation = OP_CODE_FUNCTIONS[cmd]
+                if cmd in (99, 100):
+                    if not operation(stack, cmds):
+                        print('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+                elif cmd in (107, 108):
+                    if not operation(stack, altstack):
+                        print('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+                elif cmd in (172, 173, 174, 175):
+                    if not operation(stack, z):
+                        print('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+                else:
+                    if not operation(stack):
+                        print('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+            else:
+                stack.append(cmd)
+        if len(stack) == 0:
+            return False
+        if stack.pop() == b'':
+            return False
+        return True

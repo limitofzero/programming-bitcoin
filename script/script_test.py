@@ -1,5 +1,6 @@
 from unittest import TestCase
 from script.script import Script
+from helpers.variant import encode_varint
 import io
 
 
@@ -12,3 +13,18 @@ class ScriptTest(TestCase):
         stream = io.BytesIO(hex_bytes)
         script = Script.parse(stream)
         self.assertEqual(script.__repr__(), result)
+
+    def unlock_script_pubkey(self):
+        script_pubkey = '767695935687'
+        as_bytes = bytes.fromhex(script_pubkey)
+        length = len(as_bytes)
+        as_bytes = encode_varint(length) + as_bytes
+        stream = io.BytesIO(as_bytes)
+        script_pubkey_parsed = Script.parse(stream)
+
+        b = 2
+        script_sig = Script([
+            b.to_bytes(1, 'big')
+        ])
+        result_script = script_sig + script_pubkey_parsed
+        self.assertEqual(result_script.evaluate(''), True)

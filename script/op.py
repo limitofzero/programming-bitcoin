@@ -659,14 +659,25 @@ def op_hash256(stack):
 
 
 def op_checksig(stack, z):
-    # check that there are at least 2 elements on the stack
-    # the top element of the stack is the SEC pubkey
-    # the next element of the stack is the DER signature
-    # take off the last byte of the signature as that's the hash_type
-    # parse the serialized pubkey and signature into objects
-    # verify the signature using S256Point.verify()
-    # push an encoded 1 or 0 depending on whether the signature verified
-    raise NotImplementedError
+    if len(stack) < 2:
+        return False
+    raw_pubkey = stack.pop()
+    raw_signature = stack.pop()
+    try:
+        pubkey = S256Point.parse(raw_pubkey)
+    except Exception as e:
+        print("An error occurred when pk was parsed: ", str(e))
+        return False
+    try:
+        signature = Signature.parse(raw_signature)
+    except Exception as e:
+        print("An error occurred when signature was parsed: ", str(e))
+        return False
+    if pubkey.verify(z, signature):
+        stack.append(encode_num(1))
+    else:
+        stack.append(encode_num(0))
+    return True
 
 
 def op_checksigverify(stack, z):
