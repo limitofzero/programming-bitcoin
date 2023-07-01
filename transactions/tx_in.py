@@ -1,6 +1,7 @@
 from helpers.variant import read_varint
 from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
 from script.script import Script
+from transactions.tx_fetcher import TxFetcher
 
 
 class TxIn:
@@ -34,3 +35,14 @@ class TxIn:
         script_sig = Script.parse(stream)
         sequence = little_endian_to_int(stream.read(4))
         return cls(prev_tx, prev_index, script_sig, sequence)
+
+    def fetch_tx(self, testnet=False):
+        return TxFetcher.fetch(self.prev_tx.hex(), testnet=testnet)
+
+    def value(self, testnet=False):
+        tx = self.fetch_tx(testnet=testnet)
+        return tx.tx_outs[self.prev_index].amount
+
+    def script_pubkey(self, testnet=False):
+        tx = self.fetch_tx(testnet=testnet)
+        return tx.tx_outs[self.prev_index].script_pubkey

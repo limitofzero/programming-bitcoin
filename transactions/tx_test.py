@@ -43,3 +43,12 @@ class TxTest(TestCase):
         self.assertEqual(
             tx.id(), '6530b6ed99c401262c4d40b2d097ec0fd28091b6e8b4b30e04b6b6d82576d17b'
         )
+
+    def tx_calculate_fee(self):
+        tx = """02000000018c6bc2f8f12d6b6c4a5bdbaa589696f9944fabc3a778e6d59afdccfc6744426a010000006b483045022100b40fe87efb5df7f477d8b950e0ebace4ab3f8c9fc75161d1cf9919e0e03a685402207d4fffec4d716f921f2f1b3a82b485dfe552928638948c42c4e6f33356033b3b012103299a44cd9b024d6fbcdaaaf3dc3ebf15e426cc6ca23d2b14789cc54d30feb0b0fdffffff02a41f3200000000001976a914e41f238e7b261d76f967b76af24c86a86e30adf988ac57084501000000001976a914c95eeef328d053591ff7a6a298314ce29d657bfa88ac00000000"""
+        hex_bytes = bytes.fromhex(tx)
+        tx = Tx.parse_raw_tx(hex_bytes)
+
+        self.assertEqual(
+            tx.fee(), 76400
+        )

@@ -75,3 +75,17 @@ class Tx:
         else:
             tx = cls.parse(BytesIO(raw), testnet=testnet)
         return tx
+
+    def fee(self):
+        input_amount = 0
+        for tx_in in self.tx_ins:
+            input_amount += tx_in.value()
+        output_amount = 0
+        for tx_out in self.tx_outs:
+            output_amount += tx_out.amount
+
+        fee = input_amount - output_amount
+        if fee < 0:
+            raise ValueError('Fee is negative: {}'.format(fee))
+
+        return fee

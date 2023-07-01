@@ -2,8 +2,6 @@ from io import BytesIO
 import requests
 from helpers.little_endian_to_int import little_endian_to_int
 
-from transactions.tx import Tx
-
 
 class TxFetcher:
     cache = {}
@@ -20,12 +18,12 @@ class TxFetcher:
         if fresh or (tx_id not in cls.cache):
             url = '{}/tx/{}/hex'.format(cls.get_url(testnet), tx_id)
             response = requests.get(url)
-            print(response.text)
             try:
                 raw = bytes.fromhex(response.text.strip())
             except ValueError:
                 raise ValueError(
                     'unexpected response: {}'.format(response.text))
+            from transactions.tx import Tx
             if raw[4] == 0:
                 raw = raw[:4] + raw[6:]
                 tx = Tx.parse(BytesIO(raw), testnet=testnet)
