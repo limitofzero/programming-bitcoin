@@ -1,3 +1,6 @@
+from io import BytesIO
+
+
 VALUE_MARKER = 2
 
 
