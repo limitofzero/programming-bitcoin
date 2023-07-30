@@ -4,10 +4,9 @@ from unittest import TestCase
 from s256point import S256Point
 from signature import Signature
 
-from helpers.crypto import (
-    hash160,
-    hash256,
-)
+from helpers.crypto.hash256 import hash256
+
+from helpers.crypto.hash160 import hash160
 
 
 # tag::source3[]
@@ -658,21 +657,25 @@ def op_hash256(stack):
 # end::source2[]
 
 
-def op_checksig(stack, z):
+def op_checksig(stack, z, fix_sig_length=False):
     if len(stack) < 2:
         return False
     raw_pubkey = stack.pop()
-    raw_signature = stack.pop()
     try:
         pubkey = S256Point.parse(raw_pubkey)
     except Exception as e:
         print("An error occurred when pk was parsed: ", str(e))
         return False
+
+    raw_signature = stack.pop()
+    fixed_signature = raw_signature[:-1] if fix_sig_length else raw_signature
     try:
-        signature = Signature.parse(raw_signature)
+
+        signature = Signature.parse(fixed_signature)
     except Exception as e:
         print("An error occurred when signature was parsed: ", str(e))
         return False
+
     if pubkey.verify(z, signature):
         stack.append(encode_num(1))
     else:

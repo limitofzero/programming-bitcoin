@@ -79,7 +79,7 @@ class Script:
         total = len(result)
         return encode_varint(total) + result
 
-    def evaluate(self, z):
+    def evaluate(self, z, fix_sig_length=False):
         cmds = self.cmds[:]
         stack = []
         altstack = []
@@ -96,7 +96,7 @@ class Script:
                         print('bad op: {}'.format(OP_CODE_NAMES[cmd]))
                         return False
                 elif cmd in (172, 173, 174, 175):
-                    if not operation(stack, z):
+                    if not operation(stack, z, fix_sig_length):
                         print('bad op: {}'.format(OP_CODE_NAMES[cmd]))
                         return False
                 else:

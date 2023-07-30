@@ -120,3 +120,9 @@ class Tx:
         hash = hash256(result)
         z = int.from_bytes(hash, 'big')
         return z
+
+    def verify_input(self, input_index, fix_sig_length=False, testnet=False):
+        tx_in = self.tx_ins[input_index]
+        script = tx_in.script_sig + tx_in.script_pubkey(testnet)
+        z = self.sig_hash(input_index, testnet)
+        return script.evaluate(z, fix_sig_length)
