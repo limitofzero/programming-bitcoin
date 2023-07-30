@@ -1,5 +1,7 @@
 from unittest import TestCase
 import io
+from s256point import S256Point
+from signature import Signature
 from transactions.tx import Tx
 
 
@@ -51,4 +53,19 @@ class TxTest(TestCase):
 
         self.assertEqual(
             tx.fee(), 76400
+        )
+
+    def tx_validation(self):
+        bytes_tx = bytes.fromhex(
+            '02000000018c6bc2f8f12d6b6c4a5bdbaa589696f9944fabc3a778e6d59afdccfc6744426a010000006b483045022100b40fe87efb5df7f477d8b950e0ebace4ab3f8c9fc75161d1cf9919e0e03a685402207d4fffec4d716f921f2f1b3a82b485dfe552928638948c42c4e6f33356033b3b012103299a44cd9b024d6fbcdaaaf3dc3ebf15e426cc6ca23d2b14789cc54d30feb0b0fdffffff02a41f3200000000001976a914e41f238e7b261d76f967b76af24c86a86e30adf988ac57084501000000001976a914c95eeef328d053591ff7a6a298314ce29d657bfa88ac00000000')
+        tx = Tx.parse(io.BytesIO(bytes_tx))
+
+        script_sig = tx.tx_ins[0].script_sig.cmds[1]
+        publik_key = S256Point.parse(script_sig)
+
+        sig = Signature.parse(tx.tx_ins[0].script_sig.cmds[0][:-1])
+        z = tx.sig_hash(0)
+
+        self.assertTrue(
+            publik_key.verify(z, sig)
         )

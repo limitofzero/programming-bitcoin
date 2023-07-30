@@ -61,20 +61,20 @@ class S256Point(Point):
         if sec_bin[0] == 4:
             x = int.from_bytes(sec_bin[1:33], 'big')
             y = int.from_bytes(sec_bin[33:65], 'big')
-            return S256Point(x, y)
+            return S256Point(x=x, y=y)
+        is_even = sec_bin[0] == 2
+        x = S256Field(int.from_bytes(sec_bin[1:], 'big'))
+        alpha = x**3 + S256Field(B)
+        beta = alpha.sqrt()
+        if beta.num % 2 == 0:
+            even_beta = beta
+            odd_beta = S256Field(P - beta.num)
         else:
-            x = S256Field(int.from_bytes(sec_bin[1:33], 'big'))
-            is_even = sec_bin[0] == 2
-            alpha = x ** 3 + S256Field(B)
-            beta = alpha.sqrt()
-            if beta % 2 == 0:
-                even_beta = beta
-                odd_beta = S256Field(P - beta)
-            else:
-                even_beta = S256Field(P - beta)
-                odd_beta = beta
-            if is_even:
-                return S256Point(x, even_beta)
+            even_beta = S256Field(P - beta.num)
+            odd_beta = beta
+        if is_even:
+            return S256Point(x, even_beta)
+        else:
             return S256Point(x, odd_beta)
 
 

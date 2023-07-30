@@ -32,6 +32,11 @@ class Signature:
 
     @classmethod
     def parse(cls, signature_bin):
+        if len(signature_bin) == 64:
+            r = int.from_bytes(signature_bin[:32], 'big')
+            s = int.from_bytes(signature_bin[32:], 'big')
+            return cls(r, s)
+
         s = BytesIO(signature_bin)
         compound = s.read(1)[0]
         if compound != 0x30:

@@ -1,9 +1,13 @@
+import copy
 from io import BytesIO
 from helpers.crypto.hash256 import hash256
 from helpers.little_endian_to_int import int_to_little_endian, little_endian_to_int
 from helpers.variant import encode_varint, read_varint
+from script.script import Script
 from transactions.tx_in import TxIn
 from transactions.tx_out import TxOut
+
+SIGHASH_ALL = int_to_little_endian(1, 4)
 
 
 class Tx:
@@ -89,3 +93,30 @@ class Tx:
             raise ValueError('Fee is negative: {}'.format(fee))
 
         return fee
+
+    def sig_hash(self, tx_in_index, testnet=False):
+        result = int_to_little_endian(self.version, 4)
+        result += encode_varint(len(self.tx_ins))
+        for index, tx_in in enumerate(self.tx_ins):
+            if index == tx_in_index:
+                result += TxIn(
+                    tx_in.prev_tx,
+                    tx_in.prev_index,
+                    tx_in.script_pubkey(testnet),
+                    tx_in.sequence
+                ).serialize()
+            else:
+                result += TxIn(
+                    tx_in.prev_tx,
+                    tx_in.prev_index,
+                    Script(),
+                    tx_in.sequence
+                ).serialize()
+        result += encode_varint(len(self.tx_outs))
+        for tx_out in self.tx_outs:
+            result += tx_out.serialize()
+        result += int_to_little_endian(self.locktime, 4)
+        result += SIGHASH_ALL
+        hash = hash256(result)
+        z = int.from_bytes(hash, 'big')
+        return z
