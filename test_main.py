@@ -27,6 +27,7 @@ run(transactions.tx_test.TxTest('tx_parse_modern_tx'))
 run(transactions.tx_test.TxTest('tx_calculate_fee'))
 run(transactions.tx_test.TxTest('tx_validation'))
 run(transactions.tx_test.TxTest('tx_validate_input'))
+run(ScriptTest('unlock_script_pubkey'))
 
 run(ScriptTest('unlock_script_pubkey'))
 

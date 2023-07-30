@@ -126,3 +126,13 @@ class Tx:
         script = tx_in.script_sig + tx_in.script_pubkey(testnet)
         z = self.sig_hash(input_index, testnet)
         return script.evaluate(z, fix_sig_length)
+
+    def verify(self, fix_sig_length=False):
+        if self.fee() < 0:
+            return False
+
+        for i in range(len(self.tx_ins)):
+            if not self.verify_input(i, fix_sig_length):
+                return False
+
+        return True
