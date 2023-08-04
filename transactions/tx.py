@@ -134,5 +134,4 @@ class Tx:
         for i in range(len(self.tx_ins)):
             if not self.verify_input(i, fix_sig_length):
                 return False
-
         return True
