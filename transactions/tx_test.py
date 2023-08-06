@@ -1,8 +1,17 @@
 from unittest import TestCase
+from unittest.mock import patch
 import io
 from s256point import S256Point
+from script.p2pkh_script import p2pkh_script
+from script.script import Script
 from signature import Signature
-from transactions.tx import Tx
+from transactions.tx import SIGHASH_ALL, SIGHASH_ALL_BYTES, Tx
+from transactions.tx_out import TxOut
+from transactions.tx_in import TxIn
+from transactions.tx_fetcher import TxFetcher
+from helpers.decode_base58 import decode_base58
+
+from private_key import PrivateKey
 
 
 class TxTest(TestCase):
@@ -85,3 +94,42 @@ class TxTest(TestCase):
         self.assertTrue(
             tx.verify(True)
         )
+
+    @patch('transactions.tx_fetcher.TxFetcher.fetch', return_value=None)
+    def tx_creation(self, mock_fetch):
+        prev_tx = bytes.fromhex(
+            '0d6fe5213c0b3291f208cba8bfb59b7476dffacc4e5cb66f6eb20a080843a299')
+        prev_index = 13
+        tx_in = TxIn(prev_tx, prev_index)
+        change_amount = int(0.33*100000000)
+        change_h160 = decode_base58('mzx5YhAH9kNHtcN481u6WkjeHjYtVeKVh2')
+        change_script = p2pkh_script(change_h160)
+        change_output = TxOut(amount=change_amount,
+                              script_pubkey=change_script)
+        target_amount = int(0.1*100000000)
+        target_h160 = decode_base58('mnrVtF8DWjMu839VW3rBfgYaAfKk8983Xf')
+        target_script = p2pkh_script(target_h160)
+        target_output = TxOut(amount=target_amount,
+                              script_pubkey=target_script)
+        tx_obj = Tx(1, [tx_in], [change_output, target_output], 0, True)
+
+        mockedTxOutList = [TxOut(int(0.1*100000000), None) for i in range(15)]
+        mockedTxOutList[13] = TxOut(
+            int(0.44*100000000),
+            p2pkh_script(change_h160)
+        )
+        mockedPrevTx = Tx(1, [], mockedTxOutList, 0, True)
+        mock_fetch.return_value = mockedPrevTx
+
+        z = tx_obj.sig_hash(0)
+        private_key = PrivateKey(secret=8675309)
+        der = private_key.sign(z).der()
+        sig = der + SIGHASH_ALL.to_bytes(1, 'big')
+        sec = private_key.point.sec()
+        script_sig = Script([sig, sec])
+        tx_obj.tx_ins[0].script_sig = script_sig
+
+        self.assertTrue(tx_obj.verify(True))
+
+    def tx_sign_input(self):
+        raise NotImplementedError()

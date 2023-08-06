@@ -7,7 +7,8 @@ from script.script import Script
 from transactions.tx_in import TxIn
 from transactions.tx_out import TxOut
 
-SIGHASH_ALL = int_to_little_endian(1, 4)
+SIGHASH_ALL = 1
+SIGHASH_ALL_BYTES = int_to_little_endian(SIGHASH_ALL, 4)
 
 
 class Tx:
@@ -116,10 +117,18 @@ class Tx:
         for tx_out in self.tx_outs:
             result += tx_out.serialize()
         result += int_to_little_endian(self.locktime, 4)
-        result += SIGHASH_ALL
+        result += SIGHASH_ALL_BYTES
         hash = hash256(result)
         z = int.from_bytes(hash, 'big')
         return z
+
+    def sign_input(self, in_index, pk, testnet=False):
+        z = self.sig_hash(in_index, testnet)
+        der = pk.sign(z).der()
+        signature = der + SIGHASH_ALL_BYTES.toBytes(1, 'big')
+        sec = pk.point.sec()
+        script_sig = Script(signature, sec)
+        self.tx_ins[in_index].script_sig = script_sig
 
     def verify_input(self, input_index, fix_sig_length=False, testnet=False):
         tx_in = self.tx_ins[input_index]
