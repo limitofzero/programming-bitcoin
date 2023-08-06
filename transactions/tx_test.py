@@ -122,12 +122,5 @@ class TxTest(TestCase):
         mock_fetch.return_value = mockedPrevTx
 
         private_key = PrivateKey(secret=8675309)
-        tx_obj.sign_input(0, private_key, True)
-        # z = tx_obj.sig_hash(0)
-        # der = private_key.sign(z).der()
-        # sig = der + SIGHASH_ALL.to_bytes(1, 'big')
-        # sec = private_key.point.sec()
-        # script_sig = Script([sig, sec])
-        # tx_obj.tx_ins[0].script_sig = script_sig
 
-        self.assertTrue(tx_obj.verify(True))
+        self.assertTrue(tx_obj.sign_input(0, private_key, True))

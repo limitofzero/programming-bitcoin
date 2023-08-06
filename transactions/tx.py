@@ -127,8 +127,8 @@ class Tx:
         der = pk.sign(z).der()
         signature = der + SIGHASH_ALL.to_bytes(1, 'big')
         sec = pk.point.sec()
-        script_sig = Script([signature, sec])
-        self.tx_ins[in_index].script_sig = script_sig
+        self.tx_ins[in_index].script_sig = Script([signature, sec])
+        return self.verify_input(in_index, True, testnet)
 
     def verify_input(self, input_index, fix_sig_length=False, testnet=False):
         tx_in = self.tx_ins[input_index]
