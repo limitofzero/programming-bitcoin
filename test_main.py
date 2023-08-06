@@ -29,7 +29,7 @@ run(transactions.tx_test.TxTest('tx_parse_modern_tx'))
 # run(transactions.tx_test.TxTest('tx_validation'))
 # run(transactions.tx_test.TxTest('tx_validate_input'))
 # run(transactions.tx_test.TxTest('tx_verify'))
-run(transactions.tx_test.TxTest('tx_creation'))
+run(transactions.tx_test.TxTest('tx_sign_input'))
 run(ScriptTest('unlock_script_pubkey'))
 
 # run(TxFetcherTest('fetch_mainnet_tx_by_hash_test'))

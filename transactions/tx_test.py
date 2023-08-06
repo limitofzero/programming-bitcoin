@@ -96,7 +96,7 @@ class TxTest(TestCase):
         )
 
     @patch('transactions.tx_fetcher.TxFetcher.fetch', return_value=None)
-    def tx_creation(self, mock_fetch):
+    def tx_sign_input(self, mock_fetch):
         prev_tx = bytes.fromhex(
             '0d6fe5213c0b3291f208cba8bfb59b7476dffacc4e5cb66f6eb20a080843a299')
         prev_index = 13
@@ -121,15 +121,13 @@ class TxTest(TestCase):
         mockedPrevTx = Tx(1, [], mockedTxOutList, 0, True)
         mock_fetch.return_value = mockedPrevTx
 
-        z = tx_obj.sig_hash(0)
         private_key = PrivateKey(secret=8675309)
-        der = private_key.sign(z).der()
-        sig = der + SIGHASH_ALL.to_bytes(1, 'big')
-        sec = private_key.point.sec()
-        script_sig = Script([sig, sec])
-        tx_obj.tx_ins[0].script_sig = script_sig
+        tx_obj.sign_input(0, private_key, True)
+        # z = tx_obj.sig_hash(0)
+        # der = private_key.sign(z).der()
+        # sig = der + SIGHASH_ALL.to_bytes(1, 'big')
+        # sec = private_key.point.sec()
+        # script_sig = Script([sig, sec])
+        # tx_obj.tx_ins[0].script_sig = script_sig
 
         self.assertTrue(tx_obj.verify(True))
-
-    def tx_sign_input(self):
-        raise NotImplementedError()

@@ -125,9 +125,9 @@ class Tx:
     def sign_input(self, in_index, pk, testnet=False):
         z = self.sig_hash(in_index, testnet)
         der = pk.sign(z).der()
-        signature = der + SIGHASH_ALL_BYTES.toBytes(1, 'big')
+        signature = der + SIGHASH_ALL.to_bytes(1, 'big')
         sec = pk.point.sec()
-        script_sig = Script(signature, sec)
+        script_sig = Script([signature, sec])
         self.tx_ins[in_index].script_sig = script_sig
 
     def verify_input(self, input_index, fix_sig_length=False, testnet=False):
